@@ -6,6 +6,7 @@ from databricks.sdk.service import iam
 # Load environment variables from .env file
 load_dotenv()
 
+
 class UserService:
     """
     A service class to interact with Databricks user data.
@@ -22,8 +23,14 @@ class UserService:
             client: An instance of a Databricks client (WorkspaceClient or AccountClient).
         """
         self.client = client
-    
-    def list_users(self, attributes: str, sort_by: str, user_filter: str, sort_order: iam.ListSortOrder):
+
+    def list_users(
+        self,
+        attributes: str,
+        sort_by: str,
+        user_filter: str,
+        sort_order: iam.ListSortOrder,
+    ):
         """
         Lists users from the Databricks workspace or account based on provided criteria.
 
@@ -36,10 +43,12 @@ class UserService:
         Returns:
             A list of users matching the specified criteria.
         """
-        return self.client.users.list(attributes=attributes,
-                                      sort_by=sort_by,
-                                      filter=user_filter,
-                                      sort_order=sort_order)
+        return self.client.users.list(
+            attributes=attributes,
+            sort_by=sort_by,
+            filter=user_filter,
+            sort_order=sort_order,
+        )
 
     def get_filtered_users(self, user_filter: str):
         """
@@ -51,16 +60,19 @@ class UserService:
         Returns:
             A list of dictionaries, each containing user id and user name.
         """
-        all_users = self.list_users(attributes="id,userName",
-                                    sort_by="userName",
-                                    user_filter=user_filter,
-                                    sort_order=iam.ListSortOrder.DESCENDING)
+        all_users = self.list_users(
+            attributes="id,userName",
+            sort_by="userName",
+            user_filter=user_filter,
+            sort_order=iam.ListSortOrder.DESCENDING,
+        )
         lst_user = []
         if len(lst_user) == 0:
             for u in all_users:
                 user_dict = {"id": u.id, "user_name": u.user_name}
                 lst_user.append(user_dict)
         return lst_user
+
 
 class ClusterService:
     """
@@ -95,6 +107,7 @@ class ClusterService:
         clusters = self.list_clusters()
         for cluster in clusters:
             print(cluster.cluster_name)
+
 
 class FileService:
     """
@@ -136,6 +149,7 @@ class FileService:
         for file in files:
             print(file.path)
 
+
 class WorkspaceUserService(UserService):
     """
     A service class to interact with Databricks workspace user data.
@@ -170,18 +184,21 @@ class AccountUserService(UserService):
         account_id = os.getenv("ACCOUNT_ID")
         azure_client_id = os.getenv("AZURE_CLIENT_ID")
         azure_client_secret = os.getenv("AZURE_CLIENT_SECRET")
-        client = AccountClient(host=host,
-                               account_id=account_id,
-                               azure_client_id=azure_client_id,
-                               azure_client_secret=azure_client_secret)
+        client = AccountClient(
+            host=host,
+            account_id=account_id,
+            azure_client_id=azure_client_id,
+            azure_client_secret=azure_client_secret,
+        )
         super().__init__(client)
+
 
 def main():
     """
     The main function to demonstrate the use of WorkspaceUserService, AccountUserService,
     ClusterService, and FileService.
-    
-    It initializes services for both workspace and account, retrieves filtered users, 
+
+    It initializes services for both workspace and account, retrieves filtered users,
     lists clusters, and lists files in a directory, printing the results.
     """
     workspace_service = WorkspaceUserService()
@@ -190,18 +207,21 @@ def main():
     file_service = FileService(client=workspace_service.client)
 
     try:
-        workspace_users = workspace_service.get_filtered_users("userName co ganesh.chandra@databricks.com")
+        workspace_users = workspace_service.get_filtered_users(
+            "userName co ganesh.chandra@databricks.com"
+        )
         print(f"Workspace users: {workspace_users}")
-        
+
         account_users = account_service.get_filtered_users("userName co gc")
         print(f"Account users: {account_users}")
-        
+
         cluster_service.print_cluster_names()
 
         file_service.print_file_paths("/FileStore/")
-        
+
     except Exception as e:
         print(f"Error: {e}")
+
 
 if __name__ == "__main__":
     main()
