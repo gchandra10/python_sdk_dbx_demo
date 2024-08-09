@@ -30,7 +30,7 @@ jobs:
           poetry run pdoc -o docs python_sdk_dbx_demo/azure_demo.py --no-show-source
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@vv
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
