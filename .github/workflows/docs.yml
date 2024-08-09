@@ -27,7 +27,7 @@ jobs:
 
       - name: Generate Documentation
         run: |
-          poetry run pdoc --no-show-source -o docs python_sdk_dbx_demo/*.py
+          poetry run pdoc -o docs python_sdk_dbx_demo/azure_demo.py --no-show-source
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
