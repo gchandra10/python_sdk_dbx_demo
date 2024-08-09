@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "python-dbx-sdk-demo"
+name = "python_dbx_sdk_demo"
 version = "0.1.0"
 description = ""
 authors = ["Ganesh Chandrasekaran <gchandra@gmail.com>"]
