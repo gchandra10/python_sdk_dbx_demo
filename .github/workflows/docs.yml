@@ -27,10 +27,11 @@ jobs:
 
       - name: Generate Documentation
         run: |
-          poetry run pdoc python_sdk_dbx_demo/azure_demo.py --no-show-source -o ./docs --logo "https://github.com/gchandra10/python_sdk_dbx_demo/tree/0d0a6698dda18ba1c9d83e05c6122aa7e39795a2/img/logo.png"
+          poetry run pdoc python_sdk_dbx_demo/azure_demo.py --no-show-source -o ./docs --logo "https://raw.githubusercontent.com/gchandra10/python_sdk_dbx_demo/main/img/logo.png"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_dir: ./docs
+
