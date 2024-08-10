@@ -1,4 +1,6 @@
 import os
+import logging
+from logging.handlers import TimedRotatingFileHandler
 from dotenv import load_dotenv
 from databricks.sdk import WorkspaceClient, AccountClient
 from databricks.sdk.service import iam
@@ -6,6 +8,26 @@ from databricks.sdk.service import iam
 # Load environment variables from .env file
 load_dotenv()
 
+# Configure logging
+
+# Ensure the logs directory exists
+log_dir = "logs"
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+log_file = os.path.join(log_dir, "databricks_service.log")
+file_handler = TimedRotatingFileHandler(log_file, when="midnight", interval=1, backupCount=7)
+file_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+
+# Create a console handler to display logs on the screen
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+
+# Set up basic configuration with both file and console handlers
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[file_handler, console_handler])
 
 class UserService:
     """
@@ -24,13 +46,7 @@ class UserService:
         """
         self.client = client
 
-    def list_users(
-        self,
-        attributes: str,
-        sort_by: str,
-        user_filter: str,
-        sort_order: iam.ListSortOrder,
-    ):
+    def list_users(self, attributes: str, sort_by: str, user_filter: str, sort_order: iam.ListSortOrder):
         """
         Lists users from the Databricks workspace or account based on provided criteria.
 
@@ -42,13 +58,20 @@ class UserService:
 
         Returns:
             A list of users matching the specified criteria.
+
+        Raises:
+            Exception: If there's an error in listing users.
         """
-        return self.client.users.list(
-            attributes=attributes,
-            sort_by=sort_by,
-            filter=user_filter,
-            sort_order=sort_order,
-        )
+        try:
+            return self.client.users.list(
+                attributes=attributes,
+                sort_by=sort_by,
+                filter=user_filter,
+                sort_order=sort_order,
+            )
+        except Exception as e:
+            logging.error(f"Error listing users: {e}")
+            raise
 
     def get_filtered_users(self, user_filter: str):
         """
@@ -59,38 +82,44 @@ class UserService:
 
         Returns:
             A list of dictionaries, each containing user id and user name.
+
+        Raises:
+            Exception: If there's an error in retrieving filtered users.
         """
-        all_users = self.list_users(
-            attributes="id,userName",
-            sort_by="userName",
-            user_filter=user_filter,
-            sort_order=iam.ListSortOrder.DESCENDING,
-        )
-        lst_user = []
-        if len(lst_user) == 0:
+        try:
+            all_users = self.list_users(
+                attributes="id,userName",
+                sort_by="userName",
+                user_filter=user_filter,
+                sort_order=iam.ListSortOrder.DESCENDING,
+            )
+            lst_user = []
             for u in all_users:
                 user_dict = {"id": u.id, "user_name": u.user_name}
                 lst_user.append(user_dict)
-        return lst_user
-
+            return lst_user
+        except Exception as e:
+            logging.error(f"Error getting filtered users: {e}")
+            raise
 
     def list_groups(self):
         """
-        List all groups in the Databricks account and print their display names.
+        Lists all groups in the Databricks account.
 
         Returns:
-            list of Groups
-        """
+            A list of group display names.
 
-        all_groups = self.client.groups.list()
-        
-        lst_groups = []
-        
-        # Retrieve and print the display names of all groups
-        for group in all_groups:
-            lst_groups.append(group.display_name)
-        
-        return lst_groups
+        Raises:
+            Exception: If there's an error in listing groups.
+        """
+        try:
+            all_groups = self.client.groups.list()
+            lst_groups = [group.display_name for group in all_groups]
+            return lst_groups
+        except Exception as e:
+            logging.error(f"Error listing groups: {e}")
+            raise
+
 
 class ClusterService:
     """
@@ -115,16 +144,30 @@ class ClusterService:
 
         Returns:
             A list of clusters available in the workspace.
+
+        Raises:
+            Exception: If there's an error in listing clusters.
         """
-        return self.client.clusters.list()
+        try:
+            return self.client.clusters.list()
+        except Exception as e:
+            logging.error(f"Error listing clusters: {e}")
+            raise
 
     def print_cluster_names(self):
         """
         Prints the names of all clusters in the Databricks workspace.
+
+        Raises:
+            Exception: If there's an error in printing cluster names.
         """
-        clusters = self.list_clusters()
-        for cluster in clusters:
-            print(cluster.cluster_name)
+        try:
+            clusters = self.list_clusters()
+            for cluster in clusters:
+                logging.info(f"Cluster name: {cluster.cluster_name}")
+        except Exception as e:
+            logging.error(f"Error printing cluster names: {e}")
+            raise
 
 
 class FileService:
@@ -153,8 +196,15 @@ class FileService:
 
         Returns:
             A list of files in the specified directory.
+
+        Raises:
+            Exception: If there's an error in listing files.
         """
-        return self.client.dbutils.fs.ls(path)
+        try:
+            return self.client.dbutils.fs.ls(path)
+        except Exception as e:
+            logging.error(f"Error listing files in {path}: {e}")
+            raise
 
     def print_file_paths(self, path: str):
         """
@@ -162,10 +212,17 @@ class FileService:
 
         Args:
             path: The directory path to print file paths from.
+
+        Raises:
+            Exception: If there's an error in printing file paths.
         """
-        files = self.list_files(path)
-        for file in files:
-            print(file.path)
+        try:
+            files = self.list_files(path)
+            for file in files:
+                logging.info(f"File path: {file.path}")
+        except Exception as e:
+            logging.error(f"Error printing file paths from {path}: {e}")
+            raise
 
 
 class WorkspaceUserService(UserService):
@@ -218,6 +275,8 @@ def main():
 
     It initializes services for both workspace and account, retrieves filtered users,
     lists clusters, and lists files in a directory, printing the results.
+
+    Logs the operations and handles exceptions gracefully.
     """
     workspace_service = WorkspaceUserService()
     account_service = AccountUserService()
@@ -225,23 +284,21 @@ def main():
     file_service = FileService(client=workspace_service.client)
 
     try:
-        workspace_users = workspace_service.get_filtered_users(
-            "userName co gc"
-        )
-        print(f"Workspace users: {workspace_users}")
+        workspace_users = workspace_service.get_filtered_users("userName co gc")
+        logging.info(f"Workspace users: {workspace_users}")
         
         account_groups = account_service.list_groups()
-        print(f"Account Groups: {account_groups}")
+        logging.info(f"Account Groups: {account_groups}")
 
         account_users = account_service.get_filtered_users("userName co gc")
-        print(f"Account users: {account_users}")
+        logging.info(f"Account users: {account_users}")
 
         cluster_service.print_cluster_names()
 
         file_service.print_file_paths("/FileStore/")
 
     except Exception as e:
-        print(f"Error: {e}")
+        logging.critical(f"Unhandled error: {e}")
 
 
 if __name__ == "__main__":
