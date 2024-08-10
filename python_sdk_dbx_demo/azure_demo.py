@@ -74,6 +74,24 @@ class UserService:
         return lst_user
 
 
+    def list_groups(self):
+        """
+        List all groups in the Databricks account and print their display names.
+
+        Returns:
+            list of Groups
+        """
+
+        all_groups = self.client.groups.list()
+        
+        lst_groups = []
+        
+        # Retrieve and print the display names of all groups
+        for group in all_groups:
+            lst_groups.append(group.display_name)
+        
+        return lst_groups
+
 class ClusterService:
     """
     A service class to interact with Databricks cluster data.
@@ -208,9 +226,12 @@ def main():
 
     try:
         workspace_users = workspace_service.get_filtered_users(
-            "userName co ganesh.chandra@databricks.com"
+            "userName co gc"
         )
         print(f"Workspace users: {workspace_users}")
+        
+        account_groups = account_service.list_groups()
+        print(f"Account Groups: {account_groups}")
 
         account_users = account_service.get_filtered_users("userName co gc")
         print(f"Account users: {account_users}")
