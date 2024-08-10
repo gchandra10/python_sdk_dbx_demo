@@ -25,6 +25,21 @@
             <h2>API Documentation</h2>
                 <ul class="memberlist">
             <li>
+                    <a class="variable" href="#log_dir">log_dir</a>
+            </li>
+            <li>
+                    <a class="variable" href="#log_file">log_file</a>
+            </li>
+            <li>
+                    <a class="variable" href="#file_handler">file_handler</a>
+            </li>
+            <li>
+                    <a class="variable" href="#formatter">formatter</a>
+            </li>
+            <li>
+                    <a class="variable" href="#console_handler">console_handler</a>
+            </li>
+            <li>
                     <a class="class" href="#UserService">UserService</a>
                             <ul class="memberlist">
                         <li>
@@ -123,6 +138,67 @@ python_sdk_dbx_demo<wbr>.azure_demo    </h1>
                 
                 
             </section>
+                <section id="log_dir">
+                    <div class="attr variable">
+            <span class="name">log_dir</span>        =
+<span class="default_value">&#39;logs&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#log_dir"></a>
+    
+    
+
+                </section>
+                <section id="log_file">
+                    <div class="attr variable">
+            <span class="name">log_file</span>        =
+<span class="default_value">&#39;logs/databricks_service.log&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#log_file"></a>
+    
+    
+
+                </section>
+                <section id="file_handler">
+                    <div class="attr variable">
+            <span class="name">file_handler</span>        =
+<input id="file_handler-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+            <label class="view-value-button pdoc-button" for="file_handler-view-value"></label><span class="default_value">&lt;TimedRotatingFileHandler /home/runner/work/python_sdk_dbx_demo/python_sdk_dbx_demo/logs/databricks_service.log (INFO)&gt;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#file_handler"></a>
+    
+    
+
+                </section>
+                <section id="formatter">
+                    <div class="attr variable">
+            <span class="name">formatter</span>        =
+<span class="default_value">&lt;logging.Formatter object&gt;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#formatter"></a>
+    
+    
+
+                </section>
+                <section id="console_handler">
+                    <div class="attr variable">
+            <span class="name">console_handler</span>        =
+<span class="default_value">&lt;StreamHandler (INFO)&gt;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#console_handler"></a>
+    
+    
+
+                </section>
                 <section id="UserService">
                     <div class="attr class">
             
@@ -188,6 +264,9 @@ python_sdk_dbx_demo<wbr>.azure_demo    </h1>
 
 <p>Returns:
     A list of users matching the specified criteria.</p>
+
+<p>Raises:
+    Exception: If there's an error in listing users.</p>
 </div>
 
 
@@ -209,6 +288,9 @@ python_sdk_dbx_demo<wbr>.azure_demo    </h1>
 
 <p>Returns:
     A list of dictionaries, each containing user id and user name.</p>
+
+<p>Raises:
+    Exception: If there's an error in retrieving filtered users.</p>
 </div>
 
 
@@ -223,10 +305,13 @@ python_sdk_dbx_demo<wbr>.azure_demo    </h1>
     </div>
     <a class="headerlink" href="#UserService.list_groups"></a>
     
-            <div class="docstring"><p>List all groups in the Databricks account and print their display names.</p>
+            <div class="docstring"><p>Lists all groups in the Databricks account.</p>
 
 <p>Returns:
-    list of Groups</p>
+    A list of group display names.</p>
+
+<p>Raises:
+    Exception: If there's an error in listing groups.</p>
 </div>
 
 
@@ -291,6 +376,9 @@ python_sdk_dbx_demo<wbr>.azure_demo    </h1>
 
 <p>Returns:
     A list of clusters available in the workspace.</p>
+
+<p>Raises:
+    Exception: If there's an error in listing clusters.</p>
 </div>
 
 
@@ -306,6 +394,9 @@ python_sdk_dbx_demo<wbr>.azure_demo    </h1>
     <a class="headerlink" href="#ClusterService.print_cluster_names"></a>
     
             <div class="docstring"><p>Prints the names of all clusters in the Databricks workspace.</p>
+
+<p>Raises:
+    Exception: If there's an error in printing cluster names.</p>
 </div>
 
 
@@ -373,6 +464,9 @@ python_sdk_dbx_demo<wbr>.azure_demo    </h1>
 
 <p>Returns:
     A list of files in the specified directory.</p>
+
+<p>Raises:
+    Exception: If there's an error in listing files.</p>
 </div>
 
 
@@ -391,6 +485,9 @@ python_sdk_dbx_demo<wbr>.azure_demo    </h1>
 
 <p>Args:
     path: The directory path to print file paths from.</p>
+
+<p>Raises:
+    Exception: If there's an error in printing file paths.</p>
 </div>
 
 
@@ -501,6 +598,8 @@ ClusterService, and FileService.</p>
 
 <p>It initializes services for both workspace and account, retrieves filtered users,
 lists clusters, and lists files in a directory, printing the results.</p>
+
+<p>Logs the operations and handles exceptions gracefully.</p>
 </div>
 
 
